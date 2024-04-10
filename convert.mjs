@@ -1,7 +1,6 @@
 import * as R from 'ramda';
 import fs from 'fs';
 import bmp from 'bmp-js';
-import arrayBufferToHex from 'array-buffer-to-hex';
 import { globby } from 'globby'; 
 
 const readbmp = R.pipe(
@@ -9,13 +8,15 @@ const readbmp = R.pipe(
   bmp.decode
 );
 
+const decToHex = n => n.toString(16).padStart(2, 0);
+
 const extractHexArray = (width) => R.pipe(
-  R.splitEvery(4), // 4 bytes per pixel
+  buffer => new Uint8Array(buffer), // convert to array 
+  R.splitEvery(4), // convert to JS array of buffers (4 bytes per pixel)
   R.map(R.reverse), // reverse little endian
   R.map(R.take(3)), // take only R, G, B bytes
-  R.map(arr => new Uint8Array(arr)),
-  R.map(arrayBufferToHex),
-  R.tap(console.log),
+  R.map(R.map(decToHex)),
+  R.map(R.join('')),
   R.map(R.concat('0x')),
   R.splitEvery(width)
 );
@@ -49,5 +50,10 @@ const main = R.pipe(
 
 const files = await globby(['./**/*.bmp', "!node_modules"]);
 console.log('Converting Files:');
-console.log(files);
+
 main(files);
+
+console.log('Success!');
+files.forEach(file => {
+  console.log(`${file} --> ${renameFile(file)}`)
+});

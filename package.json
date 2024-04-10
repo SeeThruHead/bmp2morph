@@ -9,7 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "array-buffer-to-hex": "^1.0.0",
     "bmp-js": "^0.1.0",
     "globby": "^14.0.1",
     "ramda": "^0.29.1"
