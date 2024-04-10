@@ -1,0 +1,17 @@
+{
+  "name": "bmp2morph",
+  "version": "0.0.1",
+  "description": "convert bmp files to morph4k text files",
+  "main": "convert.mjs",
+  "scripts": {
+    "convert": "node convert.mjs"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "array-buffer-to-hex": "^1.0.0",
+    "bmp-js": "^0.1.0",
+    "globby": "^14.0.1",
+    "ramda": "^0.29.1"
+  }
+}
