@@ -5,18 +5,18 @@ import arrayBufferToHex from 'array-buffer-to-hex';
 import { globby } from 'globby'; 
 
 const readbmp = R.pipe(
-    x => fs.readFileSync(x),
-    bmp.decode
+  x => fs.readFileSync(x),
+  bmp.decode
 );
 
 const extractHexArray = (width) => R.pipe(
-    R.splitEvery(4),
-    R.map(R.reverse),
-    R.map(arr => new Uint8Array(arr)),
-    R.map(arrayBufferToHex),
-    R.map(R.take(6)),
-    R.map(R.concat('0x')),
-    R.splitEvery(width)
+  R.splitEvery(4),
+  R.map(R.reverse),
+  R.map(arr => new Uint8Array(arr)),
+  R.map(arrayBufferToHex),
+  R.map(R.take(6)),
+  R.map(R.concat('0x')),
+  R.splitEvery(width)
 );
 
 const createMorphTxt = (width, height) => R.pipe(
