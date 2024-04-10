@@ -10,11 +10,12 @@ const readbmp = R.pipe(
 );
 
 const extractHexArray = (width) => R.pipe(
-  R.splitEvery(4),
-  R.map(R.reverse),
+  R.splitEvery(4), // 4 bytes per pixel
+  R.map(R.reverse), // reverse little endian
+  R.map(R.take(3)), // take only R, G, B bytes
   R.map(arr => new Uint8Array(arr)),
   R.map(arrayBufferToHex),
-  R.map(R.take(6)),
+  R.tap(console.log),
   R.map(R.concat('0x')),
   R.splitEvery(width)
 );
