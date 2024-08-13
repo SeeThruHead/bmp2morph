@@ -2,6 +2,7 @@ import * as R from 'ramda';
 import fs from 'fs';
 import bmp from 'bmp-js';
 import { globby } from 'globby'; 
+import path from 'path';
 
 const readbmp = R.pipe(
   x => fs.readFileSync(x),
@@ -28,28 +29,49 @@ const extractHexArray = (width) => R.pipe(
   R.splitEvery(width)
 );
 
-const createMorphTxt = (width, height) => R.pipe(
+const renameFile = R.replace('.bmp', '.ini');
+
+const prettyName = R.pipe(
+  path.basename,
+  renameFile,
+  R.replace(/\//g, ' - ')
+);
+
+const createMorphTxt = (name, width, height) => R.pipe(
   R.map(R.join(', ')),
   R.join('\n'),
-  R.concat(`
+  R.concat(`[main]
+orig_preset_name = ${name}
+display_name = ${name}
+description = ${name}
+tags = Comma separated list of tags, e.g. N64,320x240
+; orig_feature_mask = 0x00000200
+
+
+[slotmask]
+intensity = 1
+conversion = none
+data = <<EOF
 vMFX
-# mode: 0 
+# mode: 1
 # offset: 0,0
 
 # w,h
 ${width},${height}
 
-`)
+# lut
+`),
+R.concat(R.__, `
+EOF`)
 );
 
-const renameFile = R.replace('.bmp', '.morph.txt');
 
 const main = R.pipe(
   R.map(filename => R.pipe(
     readbmp,
     bmp => R.pipe(
       extractHexArray(bmp.width),
-      createMorphTxt(bmp.width, bmp.height),
+      createMorphTxt(prettyName(filename), bmp.width, bmp.height),
     )(bmp.data),
     text => fs.writeFileSync(renameFile(filename), text)
   )(filename))
