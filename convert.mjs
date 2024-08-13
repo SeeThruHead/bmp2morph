@@ -9,13 +9,20 @@ const readbmp = R.pipe(
 );
 
 const decToHex = n => n.toString(16).padStart(2, 0);
+const half = R.pipe(
+  R.divide(R.__, 2),
+  Math.round
+);
 
 const extractHexArray = (width) => R.pipe(
   buffer => new Uint8Array(buffer), // convert to array 
   R.splitEvery(4), // convert to JS array of buffers (4 bytes per pixel)
   R.map(R.reverse), // reverse little endian
   R.map(R.take(3)), // take only R, G, B bytes
-  R.map(R.map(decToHex)),
+  R.map(R.map(R.pipe( // map over each individual value
+    half, // morph only uses 0-128 of the byte for some reason
+    decToHex
+  ))),
   R.map(R.join('')),
   R.map(R.concat('0x')),
   R.splitEvery(width)
